@@ -46,8 +46,7 @@ def sql_injection(sql):
 		#response = urllib2.urlopen(payload,timeout=10).read()
 		response = requests.post(url+'jsrpc.php',data=data,headers=ugent,verify=False)
 	except Exception,msg:
-		sys.exit("\x1b[1;31m{-}  %s\x1b[0m" % (str(msg)))
-		
+		sys.exit("\x1b[1;31m{-}  %s\x1b[0m" % (str(msg)))	
 	else:
 		result_re = re.compile(r"Duplicate\s*entry\s*'~(.+?)~1")
 		result = result_re.findall(response.text)
@@ -57,17 +56,13 @@ def sql_injection(sql):
 def check_version():
 	req = requests.get(url+'/httpmon.php',headers=ugent,verify=False)
 	version = re.findall('<a class="highlight".*?>(.*?Copyright.*?)<',req.text)
-	if version != []:
-		return version[0]
-	else:
-		return False
+	return version[0] if version else False
 
 def check_sessionID(sessid):
 	req = requests.get(url+'/proxies.php',headers=ugent,cookies={'zbx_sessionid':sessid},verify=False)
-	if req.text.find('Access denied.') < 0:
-		return  sessid
-	else:
+	if 'Access denied.' in req.text:
 		sys.exit("\x1b[1;31m{-} zbx_sessionid(%s) is check Error \x1b[0m" % sessid)
+	return  sessid
 
 def script_exec():
 	pass
@@ -97,7 +92,7 @@ def api_jsonrpc_exec(authsession):
 	while True:
 		cmd = raw_input('\033[41m[zabbix_cmd]>>: \033[0m ')
 		if cmd == "" : print "Result of last comaand:"
-		if cmd.lower() == "quit" or cmd.lower() == "exit": break
+		if cmd.lower() in ("quit", "exit"): break
 
 		payload = { 'jsonrpc'  : '2.0',
 			    'method'   : 'script.update',
