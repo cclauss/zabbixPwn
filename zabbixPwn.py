@@ -62,7 +62,7 @@ def check_sessionID(sessid):
 	req = requests.get(url+'/proxies.php',headers=ugent,cookies={'zbx_sessionid':sessid},verify=False)
 	if 'Access denied.' in req.text:
 		sys.exit("\x1b[1;31m{-} zbx_sessionid(%s) is check Error \x1b[0m" % sessid)
-	return  sessid
+	return sessid
 
 def script_exec():
 	pass
